@@ -23,14 +23,14 @@ To install:
 
 2. If desired, edit config.json to change the listener to your liking. There are also some default options which may be definied for a few of the variables.
 
-3. Run `npm start`
+3. Run `npm start` and also run `node auth.js` in separate terminal
 
 4. Fire up a browser, navigate to IP/port of your choice and specify a host (https isn't used here because it's assumed it will be off-loaded to
 some sort of proxy):
 
-http://localhost:2222/ssh/host/127.0.0.1
+http://localhost:8080
 
-You will be prompted for credentials to use on the SSH server via HTTP Basic authentcaiton. This is to permit usage with some SSO systems that can replay credentials over HTTP basic.
+You will be redirect to login form for credentials to use on the SSH server via HTTP Basic authentcaiton. This is to permit usage with some SSO systems that can replay credentials over HTTP basic.
 
 # Docker Instructions
 
@@ -219,7 +219,7 @@ Clicking `Start logging` on the status bar will log all data to the client. A `D
 
 # Example:
 
-http://localhost:2222/ssh/host/192.168.1.1?port=2244&header=My%20Header&color=red
+http://localhost:8080
 
 # Tips
 * If you want to add custom JavaScript to the browser client you can either modify `./src/client.html` and add a **<script>** element, modify `./src/index.js` directly, or check out `webpack.*.js` and add your custom javascript file to a task there (best option).
