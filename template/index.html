@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>SSHy.us</title>
+
+	<link href="https://fonts.googleapis.com/css?family=Montserrat:400,600,700" rel="stylesheet">
+	<style type="text/css">
+		
+		.loading {
+    display: none;
+    position: fixed;
+    left: 47.5%;
+    color: white;
+}
+
+.failure {
+    color: red;
+    display: none;
+    font-size: 12px;
+    text-align: center;
+}
+.modal {
+	display: none;
+    z-index: 1;
+    width: 400px;
+    height: 220px;
+    position: absolute;
+    margin: auto;
+    top: -220px;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    font-family: courier-new, courier, monospace;
+    font-feature-settings: "liga" 0;
+}
+
+/* Modal Content */
+.modal-content {
+    position: relative;
+    background-color: #fff;
+    margin: auto;
+    padding: 0;
+    border: 0px solid #888;
+	border-radius: 0px;
+    box-shadow: none;
+    -webkit-animation-name: animatetop;
+    -webkit-animation-duration: 0.4s;
+    animation-name: animatetop;
+    animation-duration: 0.4s
+}
+.tests .modal-header h2 {
+  color: #979696;
+  font-family: montserrat;
+  font-size: 14px;
+  margin: 0;padding-left: 18px;text-align:left;
+}
+.tests .modal-body input {
+  background-color: #505155;
+  border: medium none;
+  box-shadow: none;
+  color: #979696;
+  font-family: montserrat;
+  font-weight: normal;
+  margin-bottom: 6px;
+  padding: 22px 18px;
+}
+.tests .modal-body input::-webkit-input-placeholder {color:#979696;}
+.tests .modal-body input::-moz-placeholder {color:#979696;}
+.tests .modal-body input:-ms-input-placeholder {color:#979696;}
+.tests .modal-body input:-moz-placeholder {color:#979696;}
+.tests .modal-body input[type="button"] {
+  background-color: #46b1ee;
+  border-radius: 0;
+  color: #242424;
+  float: none;
+  font-family: Montserrat;
+  font-size: 22px;
+  font-weight: bold;
+  margin: 10px auto 5px;
+  text-transform: uppercase;
+  width: 70%;    padding: 17px 18px;
+}
+.cer {text-align:center;}
+
+/* Add Animation */
+@-webkit-keyframes animatetop {
+    from {top:-300px; opacity:0}
+    to {top:0; opacity:1}
+}
+
+@keyframes animatetop {
+    from {top:-300px; opacity:0}
+    to {top:0; opacity:1}
+}
+
+.modal-header {
+    padding: 2px 0px;
+	text-align: center;
+    background-color: #fff;
+    color: white;
+	border-top-left-radius: 8px;
+	border-top-right-radius: 8px;
+}
+
+.modal-body {padding: 2px 16px;}
+
+.button {
+    background-color: #242d32;
+    border-radius: 5px;
+    color: white;
+    padding: 2px 16px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    width: 40%;
+	margin-left: 30.5%;
+	transition: 1s;
+}
+
+.button:hover{
+	background-color: #456;
+	box-shadow: 0px 0px 2px #242424;
+}
+
+input[type="text"], input[type="password"] {
+  padding: 4px;
+  border: none;
+  border-bottom: solid 2px #c9c9c9;
+  transition: border 0.3s;
+  background: none;
+  color: black;
+}
+
+input[type="text"]:focus, input[type="password"]:focus {
+  border-bottom: solid 2px #969696;
+}
+
+tbody {
+	color: #000;
+	font-family: courier-new, courier, monospace;
+}
+
+.load-container {
+	padding-left: 125px;
+	display: none;
+}
+
+#load {
+  width: 150px;
+  animation: loading 3s linear infinite;
+}
+
+#load #loading-inner {
+  stroke-dashoffset: 0;
+  stroke-dasharray: 300;
+  stroke-width: 5;
+  stroke-miterlimit: 10;
+  stroke-linecap: round;
+  animation: loading-circle 2s linear infinite;
+  stroke: #eee;
+  fill: transparent;
+}
+
+@keyframes loading {
+  0% {
+    transform: rotate(0);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+@keyframes loading-circle {
+  0% {
+    stroke-dashoffset: 0;
+  }
+  100% {
+    stroke-dashoffset: -600;
+  }
+}
+
+	</style>
+	<script type="text/javascript" src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+	<script type="text/javascript" src="js/custom.js"></script>
+
+	<script type="text/javascript">
+		function validate(id, text) {
+			if (!text) {
+				document.getElementById(id).style.borderBottom = 'solid 2px #ff4d4d'
+			} else {
+				if (id == "ipaddress") {
+					// incase we have a error for the port
+					if (text.includes(':')) {
+						if (!validate_port(text.split(':')[1])) {
+							document.getElementById(id).style.borderBottom = 'solid 2px #ff4d4d'
+							return
+						} else {
+							document.getElementById(id).style.borderBottom = 'solid 2px #c9c9c9'
+							document.getElementById('failure').style.display = "none"
+						}
+					} else {
+						// if we're not doing ports then hide the failure message
+						document.getElementById('failure').style.display = "none"
+					}
+					// test for valid domain name
+					if (!/^([a-z0-9]+\.)*[a-z0-9]+\.[a-z]+(\:[0-9]{1,5})?$/.test(text)) {
+						if (check_internal(text)) {
+							display_error("Be aware - IP addresses are resolved at the websocket proxy")
+						}
+						// test ip aswell.
+						if (!/^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.|$|(\:[0-9]{1,5}))){4}$/.test(text)) {
+							document.getElementById(id).style.borderBottom = 'solid 2px #ff4d4d'
+							return
+						} else {
+							document.getElementById(id).style.borderBottom = 'solid 2px #c9c9c9'
+							return
+						}
+						document.getElementById(id).style.borderBottom = 'solid 2px #ff4d4d'
+						return
+					}
+				}
+				document.getElementById(id).style.borderBottom = 'solid 2px #c9c9c9'
+			}
+		}
+	</script>
+</head>
+<body>
+
+<div id="login_cred" class="modal" style="display: block" >
+		<div class="modal-content tests">
+			<div class="modal-header">
+				<h2>RDP</h2>
+			</div>
+			<div class="modal-body">
+				<div id="login_result" style="color: red; font-weight: bold;"></div>
+				<table style="width: 100%">
+					<tbody><tr>
+						<td><input type="text" id="ipaddress" name="host" placeholder="Server IP" style="width: 90%" onblur="validate(this.id, this.value)"></td>
+					</tr>
+					<tr>
+						<td><input type="text" id="username" name="username" placeholder="Username" style="width: 90%" onblur="validate(this.id, this.value)"></td>
+					</tr>
+					<tr>
+						<td><input type="password" id="password" name="pwd" placeholder="Password" style="width: 90%" onblur="validate(this.id, this.value)"></td>
+					</tr>
+				</tbody></table>
+				<i id="failure" class="failure"></i>
+				<div class="cer"><input type="button" id="login_btn" class="button" value="Connect" ></div>
+			</div>
+		</div>
+	</div>
+</body>
+</html> 
+
