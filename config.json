@@ -1,11 +1,11 @@
 {
   "listen": {
-    "ip": "127.0.0.1",
+    "ip": "69.0.69.120",
     "port": 2222
   },
   "user": {
-    "name": "bsetec",
-    "password": "bsetec123"
+    "name": "",
+    "password": ""
   },
   "ssh": {
     "host": null,

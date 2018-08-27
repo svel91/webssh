@@ -53,16 +53,16 @@ http.createServer(function (req, res) {
   }
 
   
-}).listen(8080); 
+}).listen(8080,'69.0.69.120'); 
 
 
 function getCredential(post,callback)  {
 	var username = post.username;
 	var password = post.password;
-	if(config.user.name == username && config.user.password == password){
+	//if(config.user.name == username && config.user.password == password){
 		result = 'http://'+username+':'+password+'@'+config.listen.ip+':'+config.listen.port+'/ssh/host/'+post.host;
-	}else{
-		result = 'Failed';
-	}
+	//}else{
+	//	result = 'Failed';
+	//}
 	callback(result);
 }
